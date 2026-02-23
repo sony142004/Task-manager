@@ -96,7 +96,7 @@ const Header = ({ onOpenModal, search, setSearch }) => (
             border: '1px solid var(--border-light)',
             background: 'var(--bg-app)',
             fontSize: '0.85rem',
-            width: '200px'
+            width: '350px'
           }}
         />
       </div>
@@ -105,8 +105,6 @@ const Header = ({ onOpenModal, search, setSearch }) => (
         <span>Create Task</span>
       </button>
       <div style={{ display: 'flex', gap: '16px', color: 'var(--text-muted)' }}>
-        <MessageSquare size={20} />
-        <Bell size={20} />
         <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '12px' }}>O</div>
       </div>
     </div>
