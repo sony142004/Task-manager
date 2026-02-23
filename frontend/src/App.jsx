@@ -34,15 +34,6 @@ const Sidebar = ({ theme, setTheme }) => {
     { icon: ClipboardList, label: 'Tasks', active: true },
   ];
 
-  const messages = [
-    { icon: MessageSquare, label: 'Microsoft Team' },
-    { icon: Slack, label: 'Slack' },
-    { icon: Github, label: 'GitHub', count: 2 },
-    { icon: MessageSquare, label: 'Messenger' },
-    { icon: Mail, label: 'Gmail' },
-    { icon: Gamepad2, label: 'Discord' },
-  ];
-
   return (
     <div className="sidebar">
       <div className="logo-container">
@@ -57,28 +48,6 @@ const Sidebar = ({ theme, setTheme }) => {
             <div key={item.label} className={`nav-item ${item.active ? 'active' : ''}`}>
               <item.icon size={20} />
               <span>{item.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="nav-section">
-          <p className="nav-label">Messages</p>
-          {messages.map((item) => (
-            <div key={item.label} className="nav-item">
-              <item.icon size={20} />
-              <span>{item.label}</span>
-              {item.count && (
-                <span style={{
-                  marginLeft: 'auto',
-                  background: '#f43f5e',
-                  color: 'white',
-                  fontSize: '10px',
-                  padding: '2px 6px',
-                  borderRadius: '10px'
-                }}>
-                  {item.count}
-                </span>
-              )}
             </div>
           ))}
         </div>
