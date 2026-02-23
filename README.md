@@ -35,3 +35,6 @@
 
 ## Assumptions and Design Decisions
 <!-- Document any key assumptions made during development or reasons behind major design choices. -->
+
+## Use of AI Tools
+<!-- Clearly document where and how you used AI tools like ChatGPT, GitHub Copilot, or others. -->
