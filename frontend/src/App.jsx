@@ -108,12 +108,29 @@ const Sidebar = ({ theme, setTheme }) => {
   );
 };
 
-const Header = ({ onOpenModal }) => (
+const Header = ({ onOpenModal, search, setSearch }) => (
   <header className="header">
     <div className="header-left">
       <h1>Tasks</h1>
     </div>
     <div className="header-right">
+      <div className="search-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <Search size={18} style={{ position: 'absolute', left: '12px', color: 'var(--text-subtle)' }} />
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: '8px 12px 8px 38px',
+            borderRadius: '20px',
+            border: '1px solid var(--border-light)',
+            background: 'var(--bg-app)',
+            fontSize: '0.85rem',
+            width: '200px'
+          }}
+        />
+      </div>
       <button className="btn-create" onClick={onOpenModal}>
         <Plus size={20} />
         <span>Create Task</span>
@@ -302,6 +319,7 @@ function App() {
   const [theme, setTheme] = useState('light');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [view, setView] = useState('kanban');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -366,12 +384,17 @@ function App() {
     { title: 'Done', status: 'Done' },
   ];
 
+  const filteredTasks = tasks.filter(task =>
+    task.title.toLowerCase().includes(search.toLowerCase()) ||
+    (task.description && task.description.toLowerCase().includes(search.toLowerCase()))
+  );
+
   return (
     <div className="app-layout">
       <Sidebar theme={theme} setTheme={setTheme} />
 
       <main className="main-container">
-        <Header onOpenModal={() => setIsModalOpen(true)} />
+        <Header onOpenModal={() => setIsModalOpen(true)} search={search} setSearch={setSearch} />
 
         <div className="scroll-area">
           <div className="view-header">
@@ -400,28 +423,36 @@ function App() {
             </div>
           </div>
 
-          <div style={{ marginTop: '32px', height: '100%' }}>
-            {view === 'kanban' ? (
-              <div className="kanban-board">
-                {columns.map(col => (
-                  <KanbanColumn
-                    key={col.status}
-                    title={col.title}
-                    status={col.status}
-                    tasks={tasks.filter(t => t.status === col.status)}
-                    onDelete={handleDelete}
-                    onUpdateStatus={updateStatus}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state" style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-muted)' }}>
-                <LayoutGrid size={48} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                <h3>{view.charAt(0).toUpperCase() + view.slice(1)} view coming soon</h3>
-                <p>Switch back to Kanban to manage your tasks.</p>
-              </div>
-            )}
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={view}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              style={{ marginTop: '32px', height: '100%' }}
+            >
+              {view === 'kanban' ? (
+                <div className="kanban-board">
+                  {columns.map(col => (
+                    <KanbanColumn
+                      key={col.status}
+                      title={col.title}
+                      status={col.status}
+                      tasks={filteredTasks.filter(t => t.status === col.status)}
+                      onDelete={handleDelete}
+                      onUpdateStatus={updateStatus}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state" style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-muted)' }}>
+                  <LayoutGrid size={48} style={{ marginBottom: '16px', opacity: 0.2 }} />
+                  <h3>{view.charAt(0).toUpperCase() + view.slice(1)} view coming soon</h3>
+                  <p>We are still building this view. Switch back to Kanban to manage your tasks.</p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         <CreateTaskModal
