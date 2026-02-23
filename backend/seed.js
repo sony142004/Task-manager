@@ -5,70 +5,20 @@ const dbPath = path.resolve(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath);
 
 const tasks = [
-    {
-        title: 'Darlene Robertson',
-        description: 'Lorem Ipsum is simply dummy text printing and typesetting industry. Lorem Ipsum has been...',
-        status: 'To Do',
-        date: '02/24 12:11 PM',
-        tag: 'GitHub',
-        image: null
-    },
-    {
-        title: 'Savannah Nguyen',
-        description: 'Project kickoff meeting and resource allocation for the next quarter.',
-        status: 'To Do',
-        date: '04/24 1:14 PM',
-        tag: 'Gmail',
-        image: null
-    },
-    {
-        title: 'Leslie Alexander',
-        description: 'Do the best password option when login & send email for doting this...',
-        status: 'In Progress',
-        date: '02/22 09:33 AM',
-        tag: 'Slack',
-        image: null
-    },
-    {
-        title: 'Graphic Design Work',
-        description: 'Create new brand assets and social media templates for the spring campaign.',
-        status: 'In Progress',
-        date: '02/22 09:33 AM',
-        tag: 'Messenger',
-        image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=400&auto=format&fit=crop'
-    },
-    {
-        title: 'Brand Guideline Design',
-        description: 'Review and finalize the typography and color palette for the new sub-brand.',
-        status: 'In Review',
-        date: '02/22 09:33 AM',
-        tag: 'Gmail',
-        image: null
-    },
-    {
-        title: 'Competitor Analysis',
-        description: 'Do the best password option when login & send email for doting this...',
-        status: 'In Review',
-        date: '02/22 09:33 AM',
-        tag: 'GitHub',
-        image: null
-    },
-    {
-        title: 'Component Making Work',
-        description: 'Build reusable UI components for the task manager dashboard.',
-        status: 'Done',
-        date: '12/22 6:16 PM',
-        tag: 'Slack',
-        image: 'https://images.unsplash.com/photo-1581291518062-c12f27a98fb6?q=80&w=400&auto=format&fit=crop'
-    },
-    {
-        title: 'Brooklyn Simmons',
-        description: 'Lorem Ipsum is simply dummy text printing and typesetting industry. Lorem Ipsum has been...',
-        status: 'Done',
-        date: '11/23 4:28 PM',
-        tag: 'Slack',
-        image: null
-    },
+    // Backend Team
+    { title: 'API Authentication', description: 'Implement JWT based auth', status: 'In Progress', priority: 'High', team: 'Backend Team', due_date: '2026-03-01' },
+    { title: 'Database Migration', description: 'Move to unified schema', status: 'To Do', priority: 'Medium', team: 'Backend Team', due_date: '2026-03-05' },
+    { title: 'Cache Layer', description: 'Setup Redis caching', status: 'In Review', priority: 'Low', team: 'Backend Team', due_date: '2026-02-28' },
+    { title: 'Logging System', description: 'Integrate Winston logger', status: 'Done', priority: 'Medium', team: 'Backend Team', due_date: '2026-02-20' },
+
+    // Frontend Web Team
+    { title: 'Dashboard UI', description: 'Build team overview cards', status: 'In Progress', priority: 'High', team: 'Frontend Web Team', due_date: '2026-02-25' },
+    { title: 'Kanban Board', description: 'Integrate drag and drop', status: 'To Do', priority: 'High', team: 'Frontend Web Team', due_date: '2026-03-10' },
+    { title: 'Theme Switching', description: 'Add dark mode support', status: 'Done', priority: 'Low', team: 'Frontend Web Team', due_date: '2026-02-22' },
+
+    // Frontend App Team
+    { title: 'Mobile Login', description: 'Responsive login screen', status: 'To Do', priority: 'Medium', team: 'Frontend App Team', due_date: '2026-03-15' },
+    { title: 'Push Notifications', description: 'Setup Firebase messaging', status: 'In Review', priority: 'High', team: 'Frontend App Team', due_date: '2026-03-02' },
 ];
 
 db.serialize(() => {
@@ -79,6 +29,9 @@ db.serialize(() => {
       title TEXT NOT NULL,
       description TEXT,
       status TEXT NOT NULL DEFAULT 'To Do',
+      priority TEXT DEFAULT 'Medium',
+      team TEXT DEFAULT 'Backend Team',
+      due_date TEXT,
       date TEXT,
       tag TEXT,
       image TEXT,
@@ -86,13 +39,12 @@ db.serialize(() => {
     )
   `);
 
-    db.run('DELETE FROM tasks_v2');
-    const stmt = db.prepare('INSERT INTO tasks_v2 (title, description, status, date, tag, image) VALUES (?, ?, ?, ?, ?, ?)');
+    const stmt = db.prepare('INSERT INTO tasks_v2 (title, description, status, priority, team, due_date) VALUES (?, ?, ?, ?, ?, ?)');
     tasks.forEach(t => {
-        stmt.run(t.title, t.description, t.status, t.date, t.tag, t.image);
+        stmt.run(t.title, t.description, t.status, t.priority, t.team, t.due_date);
     });
     stmt.finalize();
-    console.log('Database seeded with image tasks!');
+    console.log('Database seeded with team tasks!');
 });
 
 db.close();

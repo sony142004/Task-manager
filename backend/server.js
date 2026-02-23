@@ -22,6 +22,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
         title TEXT NOT NULL,
         description TEXT,
         status TEXT NOT NULL DEFAULT 'To Do',
+        priority TEXT DEFAULT 'Medium',
+        team TEXT DEFAULT 'Backend Team',
+        due_date TEXT,
         date TEXT,
         tag TEXT,
         image TEXT,
@@ -43,13 +46,13 @@ app.get('/api/tasks', (req, res) => {
 
 // POST a new task
 app.post('/api/tasks', (req, res) => {
-  const { title, description, status = 'To Do', date, tag, image } = req.body;
+  const { title, description, status = 'To Do', priority = 'Medium', team = 'Backend Team', due_date, tag, image } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
 
-  const sql = 'INSERT INTO tasks_v2 (title, description, status, date, tag, image) VALUES (?, ?, ?, ?, ?, ?)';
-  db.run(sql, [title, description, status, date, tag, image], function (err) {
+  const sql = 'INSERT INTO tasks_v2 (title, description, status, priority, team, due_date, tag, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  db.run(sql, [title, description, status, priority, team, due_date, tag, image], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -62,11 +65,11 @@ app.post('/api/tasks', (req, res) => {
 
 // PUT (update) a task
 app.put('/api/tasks/:id', (req, res) => {
-  const { title, description, status, date, tag, image } = req.body;
+  const { title, description, status, priority, team, due_date, tag, image } = req.body;
   const taskId = req.params.id;
 
-  const sql = 'UPDATE tasks_v2 SET title = ?, description = ?, status = ?, date = ?, tag = ?, image = ? WHERE id = ?';
-  db.run(sql, [title, description, status, date, tag, image, taskId], function (err) {
+  const sql = 'UPDATE tasks_v2 SET title = ?, description = ?, status = ?, priority = ?, team = ?, due_date = ?, tag = ?, image = ? WHERE id = ?';
+  db.run(sql, [title, description, status, priority, team, due_date, tag, image, taskId], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
