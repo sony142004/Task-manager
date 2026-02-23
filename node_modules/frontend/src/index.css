@@ -243,6 +243,10 @@ body {
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .avatar-group {
@@ -260,4 +264,71 @@ body {
 
 .avatar-sm:first-child {
   margin-left: 0;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 500px;
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-app);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  background: var(--bg-sidebar);
 }

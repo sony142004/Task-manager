@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Layout, LayoutGrid, List, Columns, Plus, Search, Bell, Settings,
   Moon, Sun, Home, ClipboardList, ChevronRight, MoreHorizontal,
-  Calendar, Flag, Users, ArrowLeft, Filter, RefreshCw
+  Calendar, Flag, Users, ArrowLeft, Filter, RefreshCw, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -42,6 +42,91 @@ const Sidebar = ({ currentView, setView, theme, setTheme }) => {
           <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
         </button>
       </div>
+    </div>
+  );
+};
+
+const CreateTaskModal = ({ isOpen, onClose, onCreate }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [status, setStatus] = useState('To Do');
+  const [team, setTeam] = useState('Backend Team');
+  const [priority, setPriority] = useState('Medium');
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onCreate({ title, description, status, team, priority, due_date: new Date().toISOString().split('T')[0] });
+    setTitle('');
+    setDescription('');
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="modal-content"
+        onClick={e => e.stopPropagation()}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Create New Task</h2>
+          <button onClick={onClose} style={{ color: 'var(--text-muted)' }}><X size={20} /></button>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="form-group">
+            <label>Title</label>
+            <input
+              required
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Enter task title..."
+            />
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <textarea
+              rows={3}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Enter description..."
+            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="form-group">
+              <label>Status</label>
+              <select value={status} onChange={e => setStatus(e.target.value)}>
+                <option>To Do</option>
+                <option>In Progress</option>
+                <option>In Review</option>
+                <option>Done</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Team</label>
+              <select value={team} onChange={e => setTeam(e.target.value)}>
+                <option>Backend Team</option>
+                <option>Frontend Web Team</option>
+                <option>Frontend App Team</option>
+              </select>
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Priority</label>
+            <select value={priority} onChange={e => setPriority(e.target.value)}>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </div>
+          <div className="form-actions">
+            <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
+            <button type="submit" className="btn-primary">Create Task</button>
+          </div>
+        </form>
+      </motion.div>
     </div>
   );
 };
@@ -145,6 +230,17 @@ function App() {
   };
 
   useEffect(() => { fetchTasks(); }, []);
+
+  const handleCreate = async (newTask) => {
+    try {
+      const res = await fetch(`${API_BASE}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTask)
+      });
+      if (res.ok) fetchTasks();
+    } catch (err) { console.error(err); }
+  };
 
   const handleTeamClick = (teamName) => {
     setSelectedTeam(teamName);
@@ -263,6 +359,12 @@ function App() {
             )}
           </AnimatePresence>
         </div>
+
+        <CreateTaskModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onCreate={handleCreate}
+        />
       </main>
     </div>
   );
