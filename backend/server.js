@@ -17,11 +17,14 @@ const db = new sqlite3.Database(dbPath, (err) => {
   } else {
     console.log('Connected to the SQLite database.');
     db.run(`
-      CREATE TABLE IF NOT EXISTS tasks (
+      CREATE TABLE IF NOT EXISTS tasks_v2 (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         description TEXT,
-        completed BOOLEAN NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'To Do',
+        date TEXT,
+        tag TEXT,
+        image TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -30,7 +33,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // GET all tasks
 app.get('/api/tasks', (req, res) => {
-  db.all('SELECT * FROM tasks ORDER BY created_at DESC', [], (err, rows) => {
+  db.all('SELECT * FROM tasks_v2 ORDER BY created_at DESC', [], (err, rows) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -40,19 +43,18 @@ app.get('/api/tasks', (req, res) => {
 
 // POST a new task
 app.post('/api/tasks', (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, status = 'To Do', date, tag, image } = req.body;
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
-  
-  const sql = 'INSERT INTO tasks (title, description, completed) VALUES (?, ?, 0)';
-  db.run(sql, [title, description], function(err) {
+
+  const sql = 'INSERT INTO tasks_v2 (title, description, status, date, tag, image) VALUES (?, ?, ?, ?, ?, ?)';
+  db.run(sql, [title, description, status, date, tag, image], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    
-    // Return the newly created task
-    db.get('SELECT * FROM tasks WHERE id = ?', [this.lastID], (err, row) => {
+
+    db.get('SELECT * FROM tasks_v2 WHERE id = ?', [this.lastID], (err, row) => {
       res.status(201).json(row);
     });
   });
@@ -60,19 +62,19 @@ app.post('/api/tasks', (req, res) => {
 
 // PUT (update) a task
 app.put('/api/tasks/:id', (req, res) => {
-  const { title, description, completed } = req.body;
+  const { title, description, status, date, tag, image } = req.body;
   const taskId = req.params.id;
-  
-  const sql = 'UPDATE tasks SET title = ?, description = ?, completed = ? WHERE id = ?';
-  db.run(sql, [title, description, completed ? 1 : 0, taskId], function(err) {
+
+  const sql = 'UPDATE tasks_v2 SET title = ?, description = ?, status = ?, date = ?, tag = ?, image = ? WHERE id = ?';
+  db.run(sql, [title, description, status, date, tag, image, taskId], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
     if (this.changes === 0) {
       return res.status(404).json({ error: 'Task not found' });
     }
-    
-    db.get('SELECT * FROM tasks WHERE id = ?', [taskId], (err, row) => {
+
+    db.get('SELECT * FROM tasks_v2 WHERE id = ?', [taskId], (err, row) => {
       res.json(row);
     });
   });
@@ -81,7 +83,7 @@ app.put('/api/tasks/:id', (req, res) => {
 // DELETE a task
 app.delete('/api/tasks/:id', (req, res) => {
   const taskId = req.params.id;
-  db.run('DELETE FROM tasks WHERE id = ?', [taskId], function(err) {
+  db.run('DELETE FROM tasks_v2 WHERE id = ?', [taskId], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -92,6 +94,10 @@ app.delete('/api/tasks/:id', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
