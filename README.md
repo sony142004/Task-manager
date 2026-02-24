@@ -1,8 +1,5 @@
 # ProTasks - Premium Task Manager
 
-## 🚀 Live Demo
-You can view the live website here: [https://task-manager-monorepo.vercel.app/](https://task-manager-monorepo.vercel.app/) *(Note: Replace this with your actual Vercel project URL)*
-
 ## Project Overview
 ProTasks is a full-stack Kanban-style task management system designed for teams and individuals who need a high-performance, visually stunning workflow tool. It supports dynamic task organization, rich metadata integration (Slack, GitHub, Gmail), and a seamless dark/light mode experience.
 
