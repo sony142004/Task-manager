@@ -19,7 +19,7 @@ const Sidebar = ({ currentView, setView, theme, setTheme }) => {
     <div className="sidebar">
       <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--primary)', fontWeight: 800, fontSize: '1.25rem' }}>
         <Layout size={28} />
-        <span>ProTasks v2</span>
+        <span>ProTasks DEPLOY TEST</span>
       </div>
       <div style={{ marginTop: '20px' }}>
         {menuItems.map((item) => (
